@@ -1,0 +1,3 @@
+# Dare Scraper
+
+Just a web scraper in python with selenium...
