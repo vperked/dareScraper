@@ -22,13 +22,15 @@ class Setup:
             return fireFoxDriver
         except Exception as e:
             Messages.Errors.errorMessage(error=e)
-    def startUp(chrome, fireFox):
+    def startUp(chromeDriver, fireFoxDriver):
             print("c for chrome, f for firefox.")
             uI = input("Welcome to DareScraper:")
             if uI == "c":
-                chrome = Setup.initGoogleCrawler()
+                Setup.initGoogleCrawler()
+                return chromeDriver
             elif uI == "f":
-                fireFox = Setup.initFireFoxCrawler()
+                Setup.initFireFoxCrawler()
+                Crawling.beganfireFoxCrawling(fireFoxDriver)
 class Crawling: 
     def crawlFireFox(fireFoxDriver):
         try:
@@ -41,8 +43,12 @@ class Crawling:
         except Exception as e:
             Messages.Errors.errorMessage(error=e)
             return False
-    def beganCrawling(fireFoxDriver):
-        result = Crawling.crawlSite(fireFoxDriver=fireFoxDriver)
+    def crawlGoogle(googleDriver):
+        print("Logic")
+    def beganGoogleCrawling(chromeDriver):
+        result = Crawling.crawlGoogle(googleDriver=chromeDriver)
+    def beganfireFoxCrawling(fireFoxDriver):
+        result = Crawling.crawlFireFox(fireFoxDriver=fireFoxDriver)
         if result == True:
             print("Done")
         else:
@@ -61,5 +67,7 @@ class Messages:
             print(f"Crawled {website}")
 
 if __name__ == "__main__":
-    Setup.startUp()
+    chromeDriver = Setup.initGoogleCrawler()
+    fireFoxDriver = Setup.initFireFoxCrawler()
+    Setup.startUp(chromeDriver, fireFoxDriver)
 
