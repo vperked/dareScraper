@@ -1,9 +1,14 @@
+import json
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import InvalidArgumentException
 class Setup: ## Contains things used for setting up dareScraper.
     ## If user chooses, use the Google Driver.
+    def initConfig():
+        with open ("config.json") as config:
+            website = json.load(config)
+            return website["website"]
     def initGoogleCrawler():
         try:
             options = Options() 
@@ -16,7 +21,7 @@ class Setup: ## Contains things used for setting up dareScraper.
         except Exception as e:
             Messages.Errors.errorMessage(e) # if error return the message
     ## If user chooses, use the FireFox Driver.
-    def initFireFoxCrawler():
+    def initFireFoxCrawler(website):
         try:    
             options = Options()
             options.add_argument("--headless") # make it headless 
@@ -31,13 +36,12 @@ class Setup: ## Contains things used for setting up dareScraper.
                 Setup.initGoogleCrawler() ## Call the setup class & init the Google Driver.
                 Crawling.beganGoogleCrawling(chromeDriver)
             elif uI == "f": ## if they respond with F
-                Setup.initFireFoxCrawler() ## Call the setup class & init the FireFox Driver.
-                Crawling.beganfireFoxCrawling(fireFoxDriver)
+                Setup.initFireFoxCrawler(website=Setup.initConfig()) ## Call the setup class & init the FireFox Driver.
+                Crawling.beganfireFoxCrawling(fireFoxDriver, Setup.initConfig())
 class Crawling: # Contains the actual crawling. 
     def crawlFireFox(fireFoxDriver):
         try:
-            website = "https://github.com"
-            fireFoxDriver.get(website) # Get the website
+            fireFoxDriver.get(Setup.initConfig()) # Get the website
             fireFoxDriver.set_page_load_timeout(5) ## set the page timeout
             return True
         except InvalidArgumentException as invalidDomain: # if there is no domain, or it is invalid it will return invalid domain.
@@ -47,8 +51,7 @@ class Crawling: # Contains the actual crawling.
             return False ## if fails return false so program cannot contiune on.
     def crawlGoogle(googleDriver):
         try:
-            website = "https://github.com"
-            googleDriver.get(website)
+            googleDriver.get(Setup.initConfig())
             googleDriver.set_page_load_timeout(3) # same as above, just with a different driver.
             return True
         except InvalidArgumentException as invalidDomain: # if there is no domain, or it is invalid it will return invalid domain.
@@ -59,13 +62,13 @@ class Crawling: # Contains the actual crawling.
     def beganGoogleCrawling(chromeDriver):
         result = Crawling.crawlGoogle(googleDriver=chromeDriver) # Actually call the function and began crawling
         if result == True:
-            print("Sent")
+            Messages.Errors.sucessMessage(Setup.initConfig())
         else:
             print("Failed")
     def beganfireFoxCrawling(fireFoxDriver):
         result = Crawling.crawlFireFox(fireFoxDriver=fireFoxDriver) # same thing as above.
         if result == True:
-            print("Done")
+            Messages.Errors.sucessMessage(Setup.initConfig())
         else:
             print("Failed!")
 class WhenActive:
@@ -83,6 +86,6 @@ class Messages:
 
 if __name__ == "__main__":
     chromeDriver = Setup.initGoogleCrawler()
-    fireFoxDriver = Setup.initFireFoxCrawler()
+    fireFoxDriver = Setup.initFireFoxCrawler(website=Setup.initConfig())
     Setup.startUp(chromeDriver, fireFoxDriver)
 
