@@ -55,9 +55,9 @@ class Setup:  ## Contains things used for setting up DareScraper.
         try:
             options = Options() 
             argumentArray = ["--headless", "--disable-gpu", "--disable-blink-features=AutomationControlled"]
+            options.add_argument(argumentArray[0])
             options.add_argument(argumentArray[1])
             options.add_argument(argumentArray[2])
-            options.add_argument(argumentArray[3])
             chromeDriver = webdriver.Chrome(options=options)
             print("Chrome Driver Initialized, continuing...")
             return chromeDriver
@@ -74,20 +74,12 @@ class Setup:  ## Contains things used for setting up DareScraper.
         except Exception as e:
             Messages.Errors.errorMessage(error=e)  # if error, return message
     @staticmethod
-    def startUp(chromeDriver, fireFoxDriver):
-        while True:
-            print("c for chrome, f for firefox.")
-            uI = input("Welcome to DareScraper:")  # Grab user input 
-            try:    
-                str(uI)
-            except:
-                print("Invalid")
-                return
-            if uI == "c":  # if they respond with C
-                Setup.initGoogleCrawler()  # Corrected call
+    def startUp(driverChoice):
+            if driverChoice == "c":  # if they respond with C
+                chromeDriver = Setup.initGoogleCrawler()  
                 Crawling.beganGoogleCrawling(chromeDriver)
-            elif uI == "f":  # if they respond with F
-                Setup.initFireFoxCrawler()  # Corrected call
+            elif driverChoice == "f":  # if they respond with F
+                fireFoxDriver = Setup.initFireFoxCrawler()  
                 Crawling.beganfireFoxCrawling(fireFoxDriver)
 class Crawling:  # Contains the actual crawling.
     @staticmethod
@@ -145,8 +137,8 @@ class Messages:
             print(f"Crawled {website}")
 if __name__ == "__main__":
     try:
-        chromeDriver = Setup.initGoogleCrawler()
-        fireFoxDriver = Setup.initFireFoxCrawler()
-        Setup.startUp(chromeDriver, fireFoxDriver)
+        driverChoice  = input("c or f:")
+        print("Calling startup...")
+        Setup.startUp(driverChoice)
     except Exception as e:
         Messages.Errors.errorMessage(e)
