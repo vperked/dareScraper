@@ -31,6 +31,13 @@ class Database:
             user=Json.pullDBUser(),
             password=Json.getDBPassword()
     )
+            cursor = connection.cursor()
         except Exception as e:
             Messages.Errors.errorMessage(e)
+    def showDataBase(cursor):
+       cmd = cursor.execute("SHOW DATABASES")
+       for x in cursor:
+           Messages.Errors.sucessMessage(cmd)
+           Messages.Errors.sucessMessage(x)
+
 
