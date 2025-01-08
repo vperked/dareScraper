@@ -6,6 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import InvalidArgumentException
 from selenium.webdriver.common.utils import find_connectable_ip
+from functions import database
 
 class Setup:  ## Contains methods for setting up DareScraper.
     @staticmethod
@@ -58,7 +59,11 @@ class Setup:  ## Contains methods for setting up DareScraper.
     def resolveWebsite():
         try:    
             website = Setup.initConfig()  # Get the website URL from config
-            return find_connectable_ip(website)  # Resolve IP address of the website
+            resolvedIP = find_connectable_ip(website)  # Resolve IP address of the website
+            if resolvedIP == None:
+                return Messages.Errors.errorMessage("No IP found!")
+            else:
+                return resolvedIP
         except Exception as e:
             Messages.Errors.errorMessage(e)  # Handle errors
 
@@ -173,17 +178,22 @@ class Messages:
         def errorMessage(error):
             # Print error message
             print(f"There was an error: {error}")
-
         @staticmethod
         def sucessMessage(website):
             # Print success message after crawling
             print(f"Crawled {website}")
+        @staticmethod 
+        def invalidJson():
+            print("Please check config.json!")
 
 if __name__ == "__main__":
     try:
         Setup.ifRoot()  # Ensure the script is not run as root
         driverChoice = input("c(Chrome) or f(Firefox):")  # Prompt user for browser choice
-        print("Calling startup...")
+        print("Starting DB...")
+        if database.Database.connectToDataBase() == False:
+            sys.exit()
+        print("DB started, starting drivers...")
         Setup.startUp(driverChoice)  # Start the crawling process
     except Exception as e:
         Messages.Errors.errorMessage(e)  # Handle any unexpected errors
