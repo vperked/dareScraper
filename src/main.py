@@ -55,8 +55,9 @@ class Setup:  ## Contains things used for setting up DareScraper.
         try:
             options = Options() 
             argumentArray = ["--headless", "--disable-gpu", "--disable-blink-features=AutomationControlled"]
-            for arg in argumentArray:
-                options.add_argument(arg)
+            options.add_argument(argumentArray[1])
+            options.add_argument(argumentArray[2])
+            options.add_argument(argumentArray[3])
             chromeDriver = webdriver.Chrome(options=options)
             print("Chrome Driver Initialized, continuing...")
             return chromeDriver
