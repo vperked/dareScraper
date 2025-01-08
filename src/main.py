@@ -8,6 +8,11 @@ from selenium.common.exceptions import InvalidArgumentException
 from selenium.webdriver.common.utils import find_connectable_ip
 class Setup:  ## Contains things used for setting up DareScraper.
     @staticmethod
+    def ifRoot():
+        if os.getuid() == 0:
+            Messages.Errors.errorMessage("Please run in user mode!")
+            sys.exit()
+    @staticmethod
     def aptUpdate():
         try:
             print("Updating your system packages...")
@@ -82,12 +87,26 @@ class Setup:  ## Contains things used for setting up DareScraper.
                 fireFoxDriver = Setup.initFireFoxCrawler()  
                 Crawling.beganfireFoxCrawling(fireFoxDriver)
 class Crawling:  # Contains the actual crawling.
+    @staticmethod 
+    def takeScreenShot(fireFoxDriver):
+        answer = input("Take a picture of page[y or n]:")
+        if answer == "y":
+            print("Taking screenshot of webpage")
+            fireFoxDriver.get_full_page_screenshot_as_file("screenshot.png")
+            return True
+        else:
+            return False
     @staticmethod
     def crawlFireFox(fireFoxDriver):
         try:
             fireFoxDriver.get(Setup.initConfig())  # Get the website
             fireFoxDriver.set_page_load_timeout(5)  ## set the page timeout
-            Setup.resolveWebsite()
+            Crawling.takeScreenShot(fireFoxDriver) ## Take a screenshot?
+            ip = Setup.resolveWebsite()
+            if ip is None:
+                print("No IP found.")
+            elif ip == str:
+                print(ip)
             return True
         except InvalidArgumentException as invalidDomain:  # if there is no domain, or it is invalid it will return invalid domain.
             Messages.Errors.errorMessage(f"Invalid Domain Dipshit: {invalidDomain}.")  # Error Message
@@ -131,13 +150,14 @@ class Messages:
         @staticmethod
         def errorMessage(error):
             print(f"There was an error: {error}")
-            
+
         @staticmethod
         def sucessMessage(website):
             print(f"Crawled {website}")
 if __name__ == "__main__":
     try:
-        driverChoice  = input("c or f:")
+        Setup.ifRoot()
+        driverChoice  = input("c(Chrome) or f(Firefox):")
         print("Calling startup...")
         Setup.startUp(driverChoice)
     except Exception as e:
