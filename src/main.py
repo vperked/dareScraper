@@ -131,7 +131,7 @@ class Messages:
         @staticmethod
         def errorMessage(error):
             print(f"There was an error: {error}")
-
+            
         @staticmethod
         def sucessMessage(website):
             print(f"Crawled {website}")
