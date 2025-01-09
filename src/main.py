@@ -144,7 +144,8 @@ class Crawling:  # Contains the actual crawling functionality.
             if ip is None:
                 print("No IP found.")
             elif ip == str:
-                print(ip)
+                print(f"{ip} added to the DB.")
+                database.Database.addToDataBase(ip=ip, redisConnection=database.Database.connectToDataBase())
             return True
         except InvalidArgumentException as invalidDomain:  # Handle invalid domain
             Messages.Errors.errorMessage(f"Invalid Domain: {invalidDomain}.")
@@ -191,9 +192,7 @@ if __name__ == "__main__":
         Setup.ifRoot()  # Ensure the script is not run as root
         driverChoice = input("c(Chrome) or f(Firefox):")  # Prompt user for browser choice
         print("Starting DB...")
-        if database.Database.connectToDataBase() == False:
-            sys.exit()
-        print("DB started, starting drivers...")
+        database.Database.connectToDataBase()
         Setup.startUp(driverChoice)  # Start the crawling process
     except Exception as e:
         Messages.Errors.errorMessage(e)  # Handle any unexpected errors
